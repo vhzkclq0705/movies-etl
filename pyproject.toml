@@ -17,3 +17,11 @@ build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
+
+[dependency-groups]
+note = [
+    "jupyterlab>=4.3.5",
+]
+test = [
+    "pytest>=8.3.5",
+]
