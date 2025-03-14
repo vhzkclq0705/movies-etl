@@ -1,16 +1,50 @@
+import os
+import requests
+import pandas as pd
 
+BASE_URL = "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json"
+API_KEY = os.getenv("MOVIES_API_KEY")
+    
 def gen_url(dt="20120101", url_param={}):
-    import requests
-    import os
-    BASE_URL = "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?"
-    API_KEY = os.getenv("MOVIES_API_KEY")
-    
     url = f"{BASE_URL}?key={API_KEY}&targetDt={dt}"
-    
     for k, v in url_param.items():
         url += f"&{k}={v}"
     
     return url
+
+def call_api(dt="20120101", url_param={}):
+    url = gen_url(dt, url_param)
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        result = data['boxOfficeResult']['dailyBoxOfficeList']
+        return result
+    else:
+        return None
+
+def list2df(data, dt="20120101"):
+    df = pd.DataFrame(data)
+    df["dt"] = dt
+    return df
+
+def save_df(df: pd.DataFrame, base_path: str) -> str:
+    df.to_parquet(base_path, partition_cols=['dt'])
+    save_path = f"{base_path}/dt={df.at[0, 'dt']}"
+    
+    return save_path
+    
+    # os.makedirs(base_path, exist_ok=True)
+    # ymd = str(df.at[0, 'dt'])
+    
+    # df.to_parquet(f"{base_path}/movie_with_dt.parquet", engine='pyarrow')
+    
+    # df = df.drop(columns=['dt'])
+    # new_path = f"{base_path}/{ymd}"
+    # os.makedirs(new_path, exist_ok=True)
+    
+    # df.to_parquet(f"{new_path}/movie_without_dt.parquet", engine='pyarrow')
+    
+    # return new_path
     
 
 def get_movies_data(targetDt, url_params={}):
