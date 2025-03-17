@@ -42,7 +42,7 @@ def save_df(df: pd.DataFrame, base_path: str) -> str:
     
     return save_path
 
-def get_movies_data(targetDt, url_params={}):
+def get_movies_data(targetDt, url_param={}):
     """
     영화진흥위원회 API를 사용하여 특정 날짜의 박스오피스 데이터를 가져오는 함수.
     
@@ -65,7 +65,7 @@ def get_movies_data(targetDt, url_params={}):
         "key": API_KEY,
         "targetDt": targetDt
     }
-    params.update({k: v for k, v in url_params.items() if v})
+    params.update({k: v for k, v in url_param.items() if v})
     
     # API 요청
     response = requests.get(BASE_URL, params=params)
