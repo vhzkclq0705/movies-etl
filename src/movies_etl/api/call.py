@@ -9,6 +9,7 @@ def gen_url(dt="20120101", url_param={}):
     url = f"{BASE_URL}?key={API_KEY}&targetDt={dt}"
     for k, v in url_param.items():
         url += f"&{k}={v}"
+    print(url)
     
     return url
 
