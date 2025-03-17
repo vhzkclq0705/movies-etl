@@ -4,19 +4,19 @@ from pandas.api.types import is_numeric_dtype
 from movies_etl.api.call import gen_url, call_api, list2df, save_df
 
 def test_gen_url_default():
-    r = gen_url()
+    r = gen_url("20120101")
     print(r)
     assert "kobis" in r
     assert "targetDt" in r
     assert os.getenv("MOVIES_API_KEY") in r
 
 def test_gen_url_default_with_params():
-    r = gen_url(url_param={"multiMovieYn": "Y", "repNationCd": "K"})
+    r = gen_url("20120101", url_param={"multiMovieYn": "Y", "repNationCd": "K"})
     assert "&multiMovieYn=Y" in r
     assert "&repNationCd=K" in r
 
 def test_call_api():
-    r = call_api()
+    r = call_api("20120101")
     assert isinstance(r, list)
     assert isinstance(r[0]['rnum'], str)
     assert len(r) == 10
@@ -41,6 +41,19 @@ def test_save_df():
     base_path = "~/swcamp4/temp/movie"
     r = save_df(df, base_path)
     assert r == f"{base_path}/dt={ymd}"
+    read_df = pd.read_parquet(r)
+    assert 'dt' not in read_df.columns
+    assert 'dt' in pd.read_parquet(base_path).columns
+
+def test_save_df_url_param():
+    ymd = "20210101"
+    url_param = {'multiMovieYn': "Y"}
+    
+    data = call_api(dt=ymd, url_param=url_param)
+    df = list2df(data, ymd, url_param)
+    base_path = "~/swcamp4/temp/movie"
+    r = save_df(df, base_path, ['dt'] + list(url_param.keys()))
+    assert r == f"{base_path}/dt={ymd}/multiMovieYn=Y"
     read_df = pd.read_parquet(r)
     assert 'dt' not in read_df.columns
     assert 'dt' in pd.read_parquet(base_path).columns
