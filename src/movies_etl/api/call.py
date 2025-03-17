@@ -23,8 +23,17 @@ def call_api(dt="20120101", url_param={}):
         return None
 
 def list2df(data, dt="20120101"):
+    num_cols = [
+        "rnum", "rank", "rankInten",
+        "salesAmt", "salesShare", "salesInten", "salesChange", "salesAcc",
+        "audiCnt", "audiInten", "audiChange",
+        "scrnCnt", "showCnt"
+    ]
+    
     df = pd.DataFrame(data)
+    df[num_cols] = df[num_cols].apply(pd.to_numeric)
     df["dt"] = dt
+    
     return df
 
 def save_df(df: pd.DataFrame, base_path: str) -> str:
@@ -32,20 +41,6 @@ def save_df(df: pd.DataFrame, base_path: str) -> str:
     save_path = f"{base_path}/dt={df.at[0, 'dt']}"
     
     return save_path
-    
-    # os.makedirs(base_path, exist_ok=True)
-    # ymd = str(df.at[0, 'dt'])
-    
-    # df.to_parquet(f"{base_path}/movie_with_dt.parquet", engine='pyarrow')
-    
-    # df = df.drop(columns=['dt'])
-    # new_path = f"{base_path}/{ymd}"
-    # os.makedirs(new_path, exist_ok=True)
-    
-    # df.to_parquet(f"{new_path}/movie_without_dt.parquet", engine='pyarrow')
-    
-    # return new_path
-    
 
 def get_movies_data(targetDt, url_params={}):
     """
