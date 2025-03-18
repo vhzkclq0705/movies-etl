@@ -1,10 +1,13 @@
 import os
 import requests
 import pandas as pd
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_URL = "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json"
 API_KEY = os.getenv("MOVIES_API_KEY")
-    
+
 def gen_url(dt: str, url_param={}):
     url = f"{BASE_URL}?key={API_KEY}&targetDt={dt}"
     for k, v in url_param.items():
