@@ -48,3 +48,24 @@ def save_df(df: pd.DataFrame, base_path: str, partitions=['dt']):
     for p in partitions:
         save_path += f"/{p}={df.at[0, p]}"
     return save_path
+
+def merge_df(dt: str, base_path: str):
+    path = f"{base_path}/dt={dt}"
+    df = pd.read_parquet(path)
+    df.drop(columns=['rank', 'rnum', 'rankInten', 'salesShare'])
+    
+    def resolve_value(series):
+        value = series.dropna().unique()
+        return value[0] if value else None
+    
+    param_cols = ["multiMovieYn", "repNationCd"]
+    cols = list(set(df.columns) - set(param_cols))
+    agg_dict = {col: "first" for col in cols}
+    agg_dict.update({col: resolve_value for col in param_cols})
+    
+    gdf = df.groupby(["movieCd"], dropna=False).agg(agg_dict).reset_index(drop=True)
+    sdf = gdf.sort_values(by='audiCnt', ascending=False).reset_index(drop=True)
+    sdf["rnum"] = sdf.index + 1
+    sdf["rank"] = sdf["rnum"]
+    
+    return sdf

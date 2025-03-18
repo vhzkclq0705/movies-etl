@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
-from movies_etl.api.call import gen_url, call_api, list2df, save_df
+from movies_etl.api.call import gen_url, call_api, list2df, save_df, merge_df
 
 def test_gen_url_default():
     r = gen_url("20120101")
@@ -72,3 +72,13 @@ def test_list2df_check_num():
     
     for c in num_cols:
         assert is_numeric_dtype(df[c]), f"{c}가 숫자가 아닙니다."
+
+def test_merge_df():
+    PATH = "~/swcamp4/data/movies/dailyboxoffice"
+    ymd = "20240101"
+    
+    df = pd.read_parquet(f"{PATH}/dt={ymd}")
+    assert len(df) == 50
+    
+    new_df = merge_df(ymd, PATH)
+    assert len(new_df) <= len(df)
