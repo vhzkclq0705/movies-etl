@@ -68,4 +68,6 @@ def merge_df(dt: str, base_path: str):
     sdf["rnum"] = sdf.index + 1
     sdf["rank"] = sdf["rnum"]
     
+    sdf.to_parquet(f"/Users/joon/swcamp4/data/movies/merge/dailyboxoffice", partition_cols=['dt'])
+    
     return sdf
