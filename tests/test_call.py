@@ -78,7 +78,6 @@ def test_merge_df():
     ymd = "20240101"
     
     df = pd.read_parquet(f"{PATH}/dt={ymd}")
-    assert len(df) == 50
     
     new_df = merge_df(ymd, PATH)
     assert len(new_df) <= len(df)

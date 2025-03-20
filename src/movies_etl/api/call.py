@@ -43,7 +43,7 @@ def list2df(data: list, dt: str, url_params={}):
     return df
 
 def save_df(df: pd.DataFrame, base_path: str, partitions=['dt']):
-    df.to_parquet(base_path, partition_cols=partitions)
+    df.to_parquet(base_path, partition_cols=partitions, engine="pyarrow")
     save_path = base_path
     for p in partitions:
         save_path += f"/{p}={df.at[0, p]}"
@@ -52,7 +52,7 @@ def save_df(df: pd.DataFrame, base_path: str, partitions=['dt']):
 def merge_df(dt: str, base_path: str):
     path = f"{base_path}/dt={dt}"
     df = pd.read_parquet(path)
-    df.drop(columns=['rank', 'rnum', 'rankInten', 'salesShare'])
+    df.drop(columns=['rank', 'rnum', 'rankInten', 'salesShare', 'rankOldAndNew', 'openDt', 'salesInten', 'salesChange', 'salesAcc', 'audiCnt', 'audiInten', 'audiAcc', 'showCnt'])
     
     def resolve_value(series):
         value = series.dropna().unique()
@@ -68,6 +68,6 @@ def merge_df(dt: str, base_path: str):
     sdf["rnum"] = sdf.index + 1
     sdf["rank"] = sdf["rnum"]
     
-    sdf.to_parquet(f"/Users/joon/swcamp4/data/movies/merge/dailyboxoffice/dt={dt}")
+    sdf.to_parquet(f"/Users/joon/swcamp4/data/movies/merge/dailyboxoffice/dt={dt}", engine="pyarrow")
     
     return sdf
