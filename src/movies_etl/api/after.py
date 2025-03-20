@@ -12,7 +12,7 @@ def fillna_meta(prev_df, cur_df):
     # 데이터셋이 10만단위가 넘을 때 성능이 좋음
     cols = [
         "movieNm", "rank", "rnum", 
-        "salesAmt", "salesInten", "slaesChange", "salesAcc",
+        "salesAmt", "salesInten", "salesChange", "salesAcc",
         "audiCnt", "audiInten", "audiChange", "audiAcc",
         "scrncnt", "showCnt",
         "multiMovieYn", "repNationCd"
