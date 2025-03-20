@@ -21,6 +21,7 @@ def save_meta(dt: str, base_path: str):
     cur_df = pd.read_parquet(f"/Users/joon/swcamp4/data/movies/merge/dailyboxoffice/dt={dt}", engine="pyarrow")
     
     df = fillna_meta(prev_df, cur_df)
+    df["dt"] = dt
     df.to_parquet(f"{base_path}/meta", engine="pyarrow", compression="snappy")
     return f"{base_path}/meta"
 
