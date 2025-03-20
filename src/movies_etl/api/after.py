@@ -1,7 +1,5 @@
 import pandas as pd
 
-BASE_DIR = "/Users/joon/swcamp4/data"
-
 def fillna_meta(prev_df, cur_df):
     if prev_df is None or prev_df.empty:
         return cur_df
@@ -18,18 +16,15 @@ def fillna_meta(prev_df, cur_df):
     merged_df = merged_df.drop(columns=["multiMovieYn_A", "multiMovieYn_B", "repNationCd_A", "repNationCd_B"])
     return merged_df
 
-def save_meta(dt: str, dag_id: str):
-    prev_df = pd.read_parquet(f"{BASE_DIR}/{dag_id}", engine="pyarrow")
-    if "0101" in dt:
-        prev_df = None
-        
-    cur_df = pd.read_parquet(f"{BASE_DIR}/movies/merge/dailyboxoffice/dt=" + dt, engine="pyarrow")
+def save_meta(dt: str, base_path: str):
+    prev_df = None if "0101" in dt else pd.read_parquet(f"{base_path}/meta", engine="pyarrow")
+    cur_df = pd.read_parquet(f"/Users/joon/swcamp4/data/movies/merge/dailyboxoffice/dt={dt}", engine="pyarrow")
     
     df = fillna_meta(prev_df, cur_df)
-    df.to_parquet(f"{BASE_DIR}/{dag_id}/meta", engine="pyarrow", compression="snappy")
-    return f"{BASE_DIR}/{dag_id}/meta"
+    df.to_parquet(f"{base_path}/meta", engine="pyarrow", compression="snappy")
+    return f"{base_path}/meta"
 
-def gen_movie(dt: str, dag_id: str):
-    df = pd.read_parquet(f"{BASE_DIR}/{dag_id}/meta", engine='pyarrow')
-    df.to_parquet(f"{BASE_DIR}/{dag_id}/dailyboxoffice", partition_cols=['dt', 'multiMovieYn', 'repNationCd'], engine="pyarrow", compression="snappy")
-    return F"{BASE_DIR}/{dag_id}/dailyboxoffice"
+def gen_movie(dt: str, base_path: str):
+    df = pd.read_parquet(f"{base_path}/meta", engine='pyarrow')
+    df.to_parquet(f"{base_path}/dailyboxoffice", partition_cols=['dt', 'multiMovieYn', 'repNationCd'], engine="pyarrow", compression="snappy")
+    return F"{base_path}/dailyboxoffice"
