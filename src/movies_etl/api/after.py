@@ -10,7 +10,13 @@ def fillna_meta(prev_df, cur_df):
     # return df
     
     # 데이터셋이 10만단위가 넘을 때 성능이 좋음
-    cols = ["movieNm", "audiCnt", "rank", "rnum", "multiMovieYn", "repNationCd"]
+    cols = [
+        "movieNm", "rank", "rnum", 
+        "salesAmt", "salesInten", "slaesChange", "salesAcc",
+        "audiCnt", "audiInten", "audiChange", "audiAcc",
+        "scrncnt", "showCnt",
+        "multiMovieYn", "repNationCd"
+    ]
     
     merged_df = prev_df.merge(cur_df, on="movieCd", how="outer", suffixes=("_A", "_B"))
     for c in cols:
