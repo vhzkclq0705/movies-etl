@@ -44,21 +44,21 @@ def save_df(df: pd.DataFrame, base_path: str, partitions=['dt']):
 
 def merge_df(dt: str, base_path: str):
     path = f"{base_path}/dt={dt}"
-    not_use_cols = ["rnum", "rank", "rankInten", "rankOldAndNew", "openDt", "salesShare"]
-    param_cols = ["multiMovieYn", "repNationCd"]
+    not_use_cols = {"rnum", "rank", "rankInten", "rankOldAndNew", "openDt", "salesShare"}
+    param_cols = {"multiMovieYn", "repNationCd"}
     
     df = pd.read_parquet(path, engine="pyarrow")
-    df.drop(columns=not_use_cols)
+    df.drop(columns=not_use_cols, inplace=True)
     
     def resolve_value(series):
         value = series.dropna().unique()
         return value[0] if value else None
     
-    agg_dict = {col: "first" for col in list(set(df.columns) - set(param_cols))}
+    agg_dict = {col: "first" for col in df.columns if col not in param_cols}
     agg_dict.update({col: resolve_value for col in param_cols})
  
-    gdf = df.groupby("movieCd", dropna=False).agg(agg_dict).reset_index(drop=True)
-    sdf = gdf.sort_values(by='audiCnt', ascending=False).reset_index(drop=True)
+    gdf = df.groupby("movieCd", dropna=False).agg(agg_dict)
+    sdf = gdf.sort_values(by='audiCnt', ascending=False, ignore_index=True)
     sdf["rnum"] = sdf.index + 1
     sdf["rank"] = sdf["rnum"]
     
