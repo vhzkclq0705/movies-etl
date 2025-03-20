@@ -22,7 +22,7 @@ def save_meta(dt: str, base_path: str):
     
     df = fillna_meta(prev_df, cur_df)
     df["dt"] = dt
-    df.to_parquet(f"{base_path}/meta", engine="pyarrow", compression="snappy")
+    df.to_parquet(f"{base_path}/meta/meta", engine="pyarrow", compression="snappy")
     return f"{base_path}/meta"
 
 def gen_movie(dt: str, base_path: str):
