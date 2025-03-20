@@ -57,7 +57,7 @@ def merge_df(dt: str, base_path: str):
     agg_dict = {col: "first" for col in list(set(df.columns) - set(param_cols))}
     agg_dict.update({col: resolve_value for col in param_cols})
  
-    gdf = df.groupby("movieCd", dropna=False).agg(agg_dict).reset_index()
+    gdf = df.groupby("movieCd", dropna=False).agg(agg_dict).reset_index(drop=True)
     sdf = gdf.sort_values(by='audiCnt', ascending=False).reset_index(drop=True)
     sdf["rnum"] = sdf.index + 1
     sdf["rank"] = sdf["rnum"]
