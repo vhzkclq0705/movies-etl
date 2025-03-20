@@ -26,17 +26,10 @@ def call_api(dt: str, url_param={}):
     else:
         return None
 
-def list2df(data: list, dt: str, url_params={}):
-    num_cols = [
-        "rnum", "rank", "rankInten",
-        "salesAmt", "salesShare", "salesInten", "salesChange", "salesAcc",
-        "audiCnt", "audiInten", "audiChange",
-        "scrnCnt", "showCnt"
-    ]
-    
+def list2df(data: list, dt: str, url_params={}):    
     df = pd.DataFrame(data)
     df["dt"] = dt
-    df[num_cols] = df[num_cols].apply(pd.to_numeric)
+    df["audiCnt"] = df["audiCnt"].apply(pd.to_numeric)
     for k, v in url_params.items():
         df[k] = v
     
