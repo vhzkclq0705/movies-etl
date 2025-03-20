@@ -63,7 +63,7 @@ def test_list2df_check_num():
     data = call_api(dt=ymd)
     df = list2df(data, ymd)
     
-    assert is_numeric_dtype(df["audiCnt"]), f"{c}가 숫자가 아닙니다."
+    assert is_numeric_dtype(df["audiCnt"]), f"audiCnt가 숫자가 아닙니다."
 
 def test_merge_df():
     PATH = "~/swcamp4/data/movies/dailyboxoffice"
