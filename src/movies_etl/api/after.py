@@ -1,9 +1,9 @@
 import pandas as pd
 
-BASE_URL = "/Users/joon/swcamp4/data/movies/merge/dailyboxoffice/dt="
+BASE_DIR = "/Users/joon/swcamp4/data"
 
-def fillna_meta(prev_df: pd.DataFrame, cur_df: pd.DataFrame):
-    if not prev_df:
+def fillna_meta(prev_df, cur_df):
+    if prev_df is None or prev_df.empty:
         return cur_df
     # 데이터셋이 1만개 정도로 작을 때 성능이 좋음
     # prev_df = prev_df.set_index("movieCd")
@@ -17,3 +17,19 @@ def fillna_meta(prev_df: pd.DataFrame, cur_df: pd.DataFrame):
     merged_df["repNationCd"] = merged_df["repNationCd_A"].combine_first(merged_df["repNationCd_B"])
     merged_df = merged_df.drop(columns=["multiMovieYn_A", "multiMovieYn_B", "repNationCd_A", "repNationCd_B"])
     return merged_df
+
+def save_meta(dt: str, dag_id: str):
+    prev_df = pd.read_parquet(f"{BASE_DIR}/{dag_id}", engine="pyarrow")
+    if "0101" in dt:
+        prev_df = None
+        
+    cur_df = pd.read_parquet(f"{BASE_DIR}/movies/merge/dailyboxoffice/dt=" + dt, engine="pyarrow")
+    
+    df = fillna_meta(prev_df, cur_df)
+    df.to_parquet(f"{BASE_DIR}/{dag_id}/meta", engine="pyarrow", compression="snappy")
+    return f"{BASE_DIR}/{dag_id}/meta"
+
+def gen_movie(dt: str, dag_id: str):
+    df = pd.read_parquet(f"{BASE_DIR}/{dag_id}/meta", engine='pyarrow')
+    df.to_parquet(f"{BASE_DIR}/{dag_id}/dailyboxoffice", partition_cols=['dt', 'multiMovieYn', 'repNationCd'], engine="pyarrow", compression="snappy")
+    return F"{BASE_DIR}/{dag_id}/dailyboxoffice"
