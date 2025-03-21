@@ -9,7 +9,7 @@ def fillna_meta(prev_df, cur_df):
         "salesAmt", "salesInten", "salesChange", "salesAcc",
         "audiCnt", "audiInten", "audiChange", "audiAcc",
         "scrnCnt", "showCnt",
-        "multiMovieYn", "repNationCd"
+        "multiMovieYn", "repNationCd", "dt"
     ]
     drop_cols = [f"{c}_A" for c in cols] + [f"{c}_B" for c in cols]
     
