@@ -26,10 +26,16 @@ def call_api(dt: str, url_param={}):
     else:
         return None
 
-def list2df(data: list, dt: str, url_params={}):    
+def list2df(data: list, dt: str, url_params={}):
+    num_cols = [
+        'salesAmt', 'scrnCnt', 'showCnt', 'salesInten', 'salesChange',
+        'audiInten', 'audiChange', 'audiCnt', 'audiAcc'
+    ]
+    
     df = pd.DataFrame(data)
     df["dt"] = dt
-    df["audiCnt"] = df["audiCnt"].apply(pd.to_numeric)
+    
+    df[num_cols] = df[num_cols].apply(pd.to_numeric)
     for k, v in url_params.items():
         df[k] = v
     
@@ -61,6 +67,7 @@ def merge_df(dt: str, base_path: str):
     sdf = gdf.sort_values(by='audiCnt', ascending=False, ignore_index=True)
     sdf["rnum"] = sdf.index + 1
     sdf["rank"] = sdf["rnum"]
+    sdf["dt"] = dt
     
     sdf.to_parquet(f"/Users/joon/swcamp4/data/movies/merge/dailyboxoffice/dt={dt}", engine="pyarrow", compression="snappy")
     
