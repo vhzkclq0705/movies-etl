@@ -11,12 +11,13 @@ def fillna_meta(prev_df, cur_df):
         "scrnCnt", "showCnt",
         "multiMovieYn", "repNationCd"
     ]
+    drop_cols = [f"{c}_A" for c in cols] + [f"{c}_B" for c in cols]
     
     merged_df = prev_df.merge(cur_df, on="movieCd", how="outer", suffixes=("_A", "_B"))
     for c in cols:
         merged_df[c] = merged_df[f"{c}_A"].combine_first(merged_df[f"{c}_B"])
-        merged_df.drop(columns=[f"{c}_A", f"{c}_B"], inplace=True)
-    
+    merged_df.drop(columns=drop_cols, inplace=True)
+
     return merged_df
 
 def save_meta(dt: str, base_path: str):
